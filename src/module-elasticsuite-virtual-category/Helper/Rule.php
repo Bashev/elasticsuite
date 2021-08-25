@@ -1,15 +1,10 @@
 <?php
-/**
- * DISCLAIMER
+/*
+ * @package      Webcode_elasticsuite
  *
- * Do not edit or add to this file if you wish to upgrade Smile ElasticSuite to newer
- * versions in the future.
- *
- * @category  Smile
- * @package   Smile\ElasticsuiteVirtualCategory
- * @author    Romain Ruaud <romain.ruaud@smile.fr>
- * @copyright 2020 Smile
- * @license   Open Software License ("OSL") v. 3.0
+ * @author       Kostadin Bashev (bashev@webcode.bg)
+ * @copyright    Copyright © 2021 Webcode Ltd. (https://webcode.bg/)
+ * @license      See LICENSE.txt for license details.
  */
 
 namespace Smile\ElasticsuiteVirtualCategory\Helper;
@@ -66,7 +61,7 @@ class Rule
             $virtualRule = $category->getVirtualRule();
             $data        = call_user_func_array([$virtualRule, $callback], [$category]);
             $cacheData   = serialize($data);
-            $this->cache->save($cacheData, $cacheKey, [\Magento\Catalog\Model\Category::CACHE_TAG]);
+            $this->cache->save($cacheData, $cacheKey, $category->getCacheTags());
         }
         \Magento\Framework\Profiler::stop('ES:Virtual Rule ' . $callback);
 

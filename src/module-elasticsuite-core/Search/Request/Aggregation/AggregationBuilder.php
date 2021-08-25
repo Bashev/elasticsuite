@@ -1,15 +1,10 @@
 <?php
-/**
- * DISCLAIMER
+/*
+ * @package      Webcode_elasticsuite
  *
- * Do not edit or add to this file if you wish to upgrade Smile ElasticSuite to newer
- * versions in the future.
- *
- * @category  Smile
- * @package   Smile\ElasticsuiteCore
- * @author    Aurelien FOUCRET <aurelien.foucret@smile.fr>
- * @copyright 2020 Smile
- * @license   Open Software License ("OSL") v. 3.0
+ * @author       Kostadin Bashev (bashev@webcode.bg)
+ * @copyright    Copyright © 2021 Webcode Ltd. (https://webcode.bg/)
+ * @license      See LICENSE.txt for license details.
  */
 
 namespace Smile\ElasticsuiteCore\Search\Request\Aggregation;
@@ -102,6 +97,7 @@ class AggregationBuilder
     {
         $bucketType = $bucketParams['type'];
         $fieldName  = $bucketParams['field'] ?? $bucketParams['name'];
+        $logicalOperator = FieldInterface::FILTER_LOGICAL_OPERATOR_OR;
 
         try {
             $field = $containerConfig->getMapping()->getField($fieldName);
@@ -111,6 +107,7 @@ class AggregationBuilder
             } elseif (isset($bucketParams['nestedPath'])) {
                 unset($bucketParams['nestedPath']);
             }
+            $logicalOperator = $field->getFilterLogicalOperator();
         } catch (\Exception $e) {
             $bucketParams['field'] = $fieldName;
         }
@@ -121,6 +118,10 @@ class AggregationBuilder
 
         // Ensure any globally applied (attribute layered navigation) filter is NOT applied on the (most likely) originating agg.
         $bucketFilters = array_diff_key($filters, [$fieldName => true]);
+        if ($logicalOperator === FieldInterface::FILTER_LOGICAL_OPERATOR_AND) {
+            $bucketFilters = $filters;
+        }
+
         if (!empty($bucketFilters)) {
             $bucketParams['filter'] = $this->createFilter($containerConfig, $bucketFilters);
         }

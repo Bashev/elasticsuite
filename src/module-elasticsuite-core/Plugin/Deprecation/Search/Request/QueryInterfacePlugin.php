@@ -1,14 +1,10 @@
 <?php
-/**
- * DISCLAIMER
- * Do not edit or add to this file if you wish to upgrade Smile Elastic Suite to newer
- * versions in the future.
+/*
+ * @package      Webcode_elasticsuite
  *
- * @category  Smile
- * @package   Smile\ElasticsuiteCore
- * @author    Romain Ruaud <romain.ruaud@smile.fr>
- * @copyright 2020 Smile
- * @license   Open Software License ("OSL") v. 3.0
+ * @author       Kostadin Bashev (bashev@webcode.bg)
+ * @copyright    Copyright © 2021 Webcode Ltd. (https://webcode.bg/)
+ * @license      See LICENSE.txt for license details.
  */
 
 namespace Smile\ElasticsuiteCore\Plugin\Deprecation\Search\Request;
@@ -54,7 +50,7 @@ class QueryInterfacePlugin
      */
     public function afterGetCutoffFrequency(\Smile\ElasticsuiteCore\Search\Request\QueryInterface $subject, $result)
     {
-        if (strcmp($this->clusterInfo->getServerVersion(), "7.3.0") >= 0) {
+        if (version_compare($this->clusterInfo->getServerVersion(), "7.3.0") >= 0) {
             $result = 0; // Will be evaluated as false and discarded by the Query Builder.
         }
 

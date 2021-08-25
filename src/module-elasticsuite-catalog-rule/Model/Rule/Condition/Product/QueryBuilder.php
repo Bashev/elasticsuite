@@ -1,15 +1,10 @@
 <?php
-/**
- * DISCLAIMER
+/*
+ * @package      Webcode_elasticsuite
  *
- * Do not edit or add to this file if you wish to upgrade Smile ElasticSuite to newer
- * versions in the future.
- *
- * @category  Smile
- * @package   Smile\ElasticsuiteCatalogRule
- * @author    Aurelien FOUCRET <aurelien.foucret@smile.fr>
- * @copyright 2020 Smile
- * @license   Open Software License ("OSL") v. 3.0
+ * @author       Kostadin Bashev (bashev@webcode.bg)
+ * @copyright    Copyright © 2021 Webcode Ltd. (https://webcode.bg/)
+ * @license      See LICENSE.txt for license details.
  */
 namespace Smile\ElasticsuiteCatalogRule\Model\Rule\Condition\Product;
 
@@ -153,7 +148,7 @@ class QueryBuilder
 
         if (in_array($productCondition->getAttribute(), array_keys($this->specialAttributesProvider->getList()))) {
             $specialAttribute = $this->specialAttributesProvider->getAttribute($productCondition->getAttribute());
-            $query            = $specialAttribute->getSearchQuery();
+            $query            = $specialAttribute->getSearchQuery($productCondition);
         }
 
         return $query;
@@ -287,7 +282,9 @@ class QueryBuilder
             $analyzer = $field->getDefaultSearchAnalyzer();
         }
 
-        return $field->getMappingProperty($analyzer);
+        // If the field is "used_for_promo_rules" but not "searchable", $field->getMappingProperty() might return null.
+        // In this case, we fallback to raw field name, that should exist in mapping.
+        return $field->getMappingProperty($analyzer) ?? $field->getName();
     }
 
     /**

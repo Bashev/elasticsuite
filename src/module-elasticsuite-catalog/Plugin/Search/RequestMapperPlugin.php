@@ -1,15 +1,10 @@
 <?php
-/**
- * DISCLAIMER
+/*
+ * @package      Webcode_elasticsuite
  *
- * Do not edit or add to this file if you wish to upgrade Smile ElasticSuite to newer
- * versions in the future.
- *
- * @category  Smile
- * @package   Smile\ElasticsuiteCatalog
- * @author    Aurelien FOUCRET <aurelien.foucret@smile.fr>
- * @copyright 2020 Smile
- * @license   Open Software License ("OSL") v. 3.0
+ * @author       Kostadin Bashev (bashev@webcode.bg)
+ * @copyright    Copyright © 2021 Webcode Ltd. (https://webcode.bg/)
+ * @license      See LICENSE.txt for license details.
  */
 namespace Smile\ElasticsuiteCatalog\Plugin\Search;
 
@@ -74,24 +69,29 @@ class RequestMapperPlugin
     /**
      * Constructor.
      *
-     * @param \Magento\Customer\Model\Session                     $customerSession    Customer session.
-     * @param \Magento\Store\Model\StoreManagerInterface          $storeManager       Store manager.
-     * @param \Smile\ElasticsuiteCore\Helper\Mapping              $mappingHelper      Mapping helper.
-     * @param \Smile\ElasticsuiteCore\Api\Search\ContextInterface $searchContext      Search context.
-     * @param \Magento\Catalog\Api\CategoryRepositoryInterface    $categoryRepository Category Repository.
+     * @param \Magento\Customer\Model\Session                     $customerSession         Customer session.
+     * @param \Magento\Store\Model\StoreManagerInterface          $storeManager            Store manager.
+     * @param \Smile\ElasticsuiteCore\Helper\Mapping              $mappingHelper           Mapping helper.
+     * @param \Smile\ElasticsuiteCore\Api\Search\ContextInterface $searchContext           Search context.
+     * @param \Magento\Catalog\Api\CategoryRepositoryInterface    $categoryRepository      Category Repository.
+     * @param array                                               $productSearchContainers Product Search containers.
      */
     public function __construct(
         \Magento\Customer\Model\Session $customerSession,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Smile\ElasticsuiteCore\Helper\Mapping $mappingHelper,
         \Smile\ElasticsuiteCore\Api\Search\ContextInterface $searchContext,
-        \Magento\Catalog\Api\CategoryRepositoryInterface $categoryRepository
+        \Magento\Catalog\Api\CategoryRepositoryInterface $categoryRepository,
+        $productSearchContainers = []
     ) {
         $this->customerSession    = $customerSession;
         $this->storeManager       = $storeManager;
         $this->mappingHelper      = $mappingHelper;
         $this->searchContext      = $searchContext;
         $this->categoryRepository = $categoryRepository;
+        if (is_array($productSearchContainers) && !empty($productSearchContainers)) {
+            $this->productSearchContainers = array_merge($productSearchContainers, $this->productSearchContainers);
+        }
     }
 
     /**

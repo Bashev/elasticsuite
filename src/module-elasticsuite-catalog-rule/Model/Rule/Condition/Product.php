@@ -1,15 +1,10 @@
 <?php
-/**
- * DISCLAIMER
+/*
+ * @package      Webcode_elasticsuite
  *
- * Do not edit or add to this file if you wish to upgrade Smile ElasticSuite to newer
- * versions in the future.
- *
- * @category  Smile
- * @package   Smile\ElasticsuiteCatalogRule
- * @author    Aurelien FOUCRET <aurelien.foucret@smile.fr>
- * @copyright 2020 Smile
- * @license   Open Software License ("OSL") v. 3.0
+ * @author       Kostadin Bashev (bashev@webcode.bg)
+ * @copyright    Copyright © 2021 Webcode Ltd. (https://webcode.bg/)
+ * @license      See LICENSE.txt for license details.
  */
 namespace Smile\ElasticsuiteCatalogRule\Model\Rule\Condition;
 
@@ -217,7 +212,7 @@ class Product extends \Magento\Rule\Model\Condition\Product\AbstractProduct
         $valueName = parent::getValueName();
 
         if (in_array($this->getAttribute(), array_keys($this->specialAttributesProvider->getList()))) {
-            $valueName = $this->specialAttributesProvider->getAttribute($this->getAttribute())->getValueName();
+            $valueName = $this->specialAttributesProvider->getAttribute($this->getAttribute())->getValueName($this->getData('value'));
         }
 
         return $valueName;
@@ -231,7 +226,8 @@ class Product extends \Magento\Rule\Model\Condition\Product\AbstractProduct
         $operatorName = parent::getOperatorName();
 
         if (in_array($this->getAttribute(), array_keys($this->specialAttributesProvider->getList()))) {
-            $operatorName = $this->specialAttributesProvider->getAttribute($this->getAttribute())->getOperatorName();
+            $specialOperatorName = $this->specialAttributesProvider->getAttribute($this->getAttribute())->getOperatorName();
+            $operatorName = $specialOperatorName ?? $operatorName;
         }
 
         return $operatorName;
@@ -267,7 +263,10 @@ class Product extends \Magento\Rule\Model\Condition\Product\AbstractProduct
     public function getValue()
     {
         if (in_array($this->getAttribute(), array_keys($this->specialAttributesProvider->getList()))) {
-            $this->setData('value', $this->specialAttributesProvider->getAttribute($this->getAttribute())->getValue());
+            $this->setData(
+                'value',
+                $this->specialAttributesProvider->getAttribute($this->getAttribute())->getValue($this->getData('value'))
+            );
         }
 
         return $this->getData('value');

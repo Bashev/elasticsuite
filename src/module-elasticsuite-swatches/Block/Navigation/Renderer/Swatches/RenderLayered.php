@@ -1,15 +1,10 @@
 <?php
-/**
- * DISCLAIMER
+/*
+ * @package      Webcode_elasticsuite
  *
- * Do not edit or add to this file if you wish to upgrade Smile ElasticSuite to newer
- * versions in the future.
- *
- * @category  Smile
- * @package   Smile\ElasticsuiteSwatches
- * @author    Aurelien FOUCRET <aurelien.foucret@smile.fr>
- * @copyright 2020 Smile
- * @license   Open Software License ("OSL") v. 3.0
+ * @author       Kostadin Bashev (bashev@webcode.bg)
+ * @copyright    Copyright © 2021 Webcode Ltd. (https://webcode.bg/)
+ * @license      See LICENSE.txt for license details.
  */
 
 namespace Smile\ElasticsuiteSwatches\Block\Navigation\Renderer\Swatches;
@@ -31,6 +26,8 @@ class RenderLayered extends \Magento\Swatches\Block\LayeredNavigation\RenderLaye
     /**
      * Override the native method to sort swatch options in the expected when the sorting isn't set to manual order
      * as defined in the admin attribute parameters.
+     *
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      *
      * @return array
      */
@@ -67,7 +64,9 @@ class RenderLayered extends \Magento\Swatches\Block\LayeredNavigation\RenderLaye
         }
 
         foreach (array_merge(array_flip($sortingArr), $attributeOptions) as $item) {
-            $attributeOptionsSort[$item['id']] = $item;
+            if (is_array($item) && array_key_exists('id', $item)) {
+                $attributeOptionsSort[$item['id']] = $item;
+            }
         }
 
         $attributeOptionIds = array_keys($attributeOptionsSort);

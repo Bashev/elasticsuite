@@ -1,15 +1,11 @@
 <?php
 
-/**
- * DISCLAIMER
- * Do not edit or add to this file if you wish to upgrade Smile Elastic Suite to newer
- * versions in the future.
+/*
+ * @package      Webcode_elasticsuite
  *
- * @category  Smile
- * @package   Smile\ElasticsuiteCatalogGraphQl
- * @author    Romain Ruaud <romain.ruaud@smile.fr>
- * @copyright 2020 Smile
- * @license   Open Software License ("OSL") v. 3.0
+ * @author       Kostadin Bashev (bashev@webcode.bg)
+ * @copyright    Copyright © 2021 Webcode Ltd. (https://webcode.bg/)
+ * @license      See LICENSE.txt for license details.
  */
 
 namespace Smile\ElasticsuiteCatalogGraphQl\DataProvider\Product\LayeredNavigation\Builder;
@@ -20,6 +16,7 @@ use Magento\CatalogGraphQl\DataProvider\Product\LayeredNavigation\LayerBuilderIn
 use Magento\Framework\Api\Search\AggregationInterface;
 use Magento\Framework\Api\Search\BucketInterface;
 use Smile\ElasticsuiteCore\Helper\Mapping;
+use Smile\ElasticsuiteCore\Search\Request\BucketInterface as ElasticBucketInterface;
 
 /**
  * Layered Navigation Builder for Default Attribute.
@@ -46,6 +43,7 @@ class Attribute implements LayerBuilderInterface
     private $bucketNameFilter = [
         Price::PRICE_BUCKET,
         Category::CATEGORY_BUCKET,
+        'attribute_set_id',
     ];
 
     /**
@@ -96,23 +94,84 @@ class Attribute implements LayerBuilderInterface
                 $label = $attributeCode;
             }
 
-            $result[$attributeCode] = $this->layerFormatter->buildLayer(
-                $label,
-                \count($bucket->getValues()),
-                $attributeCode
-            );
-
+            $hasMore = false;
+            $count   = \count($bucket->getValues());
+            $options = [];
             foreach ($bucket->getValues() as $value) {
-                $metrics                             = $value->getMetrics();
-                $result[$attributeCode]['options'][] = $this->layerFormatter->buildItem(
-                    $attribute['options'][$value->getValue()] ?? $value->getValue(),
-                    $value->getValue(),
-                    $metrics['count']
-                );
+                $metrics = $value->getMetrics();
+                if ($value->getValue() === '__other_docs') {
+                    $count += ((int) $metrics['count'] ?? 0) - 1; // -1 because '__other_docs' is counted in.
+                    $hasMore = true;
+                    continue;
+                }
+
+                $options[] = $this->layerFormatter->buildItem($value->getValue(), $value->getValue(), $metrics['count']);
+            }
+
+            $result[$attributeCode] = $this->layerFormatter->buildLayer($label, $count, $attributeCode);
+            $result[$attributeCode]['options']  = $options;
+            $result[$attributeCode]['has_more'] = $hasMore;
+
+            if ($attributeCode !== 'attribute_set_id' &&
+                $attribute->getFacetSortOrder() == ElasticBucketInterface::SORT_ORDER_MANUAL) {
+                $items = array_column($result[$attributeCode]['options'], null, 'label');
+                $options = $attribute->getFrontend()->getSelectOptions();
+
+                $result[$attributeCode]['options'] = $this->addOptionsData($items, $options);
             }
         }
 
         return $result;
+    }
+
+    /**
+     * Resort items according option position defined in admin.
+     *
+     * @param array $items   Items to be sorted.
+     * @param array $options Options of attribute.
+     *
+     * @return array
+     */
+    private function addOptionsData(array $items, $options)
+    {
+        $optionPosition = 0;
+        if (!empty($options)) {
+            foreach ($options as $option) {
+                if (isset($option['label']) && !empty($option['label'])) {
+                    $optionLabel = trim((string) $option['label']);
+                    $optionPosition++;
+
+                    if (isset($items[$optionLabel])) {
+                        $items[$optionLabel]['adminSortIndex'] = $optionPosition;
+                        $items[$optionLabel]['value']          = $optionLabel;
+                    }
+                }
+            }
+
+            $items = $this->sortOptionsData($items);
+        }
+
+        return $items;
+    }
+
+    /**
+     * Sort items by adminSortIndex key.
+     *
+     * @param array $items to be sorted.
+     *
+     * @return array
+     */
+    private function sortOptionsData(array $items)
+    {
+        usort($items, function ($item1, $item2) {
+            if (!isset($item1['adminSortIndex']) or !isset($item2['adminSortIndex'])) {
+                return 0;
+            }
+
+            return $item1['adminSortIndex'] <= $item2['adminSortIndex'] ? -1 : 1;
+        });
+
+        return $items;
     }
 
     /**

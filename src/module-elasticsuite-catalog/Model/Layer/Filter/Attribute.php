@@ -1,20 +1,16 @@
 <?php
-/**
- * DISCLAIMER
+/*
+ * @package      Webcode_elasticsuite
  *
- * Do not edit or add to this file if you wish to upgrade Smile ElasticSuite to newer
- * versions in the future.
- *
- * @category  Smile
- * @package   Smile\ElasticsuiteCatalog
- * @author    Aurelien FOUCRET <aurelien.foucret@smile.fr>
- * @copyright 2020 Smile
- * @license   Open Software License ("OSL") v. 3.0
+ * @author       Kostadin Bashev (bashev@webcode.bg)
+ * @copyright    Copyright © 2021 Webcode Ltd. (https://webcode.bg/)
+ * @license      See LICENSE.txt for license details.
  */
 
 namespace Smile\ElasticsuiteCatalog\Model\Layer\Filter;
 
 use Smile\ElasticsuiteCore\Search\Request\BucketInterface;
+use Smile\ElasticsuiteCatalog\Model\Attribute\Source\FilterDisplayMode;
 
 /**
  * Product attribute filter implementation.
@@ -107,7 +103,7 @@ class Attribute extends \Magento\CatalogSearch\Model\Layer\Filter\Attribute
             $layerState = $this->getLayer()->getState();
 
             foreach ($this->currentFilterValue as $currentFilter) {
-                $filter = $this->_createItem($this->escaper->escapeHtml($currentFilter), $this->currentFilterValue);
+                $filter = $this->_createItem($this->tagFilter->filter($currentFilter), $this->currentFilterValue);
                 $layerState->addFilter($filter);
             }
         }
@@ -145,8 +141,10 @@ class Attribute extends \Magento\CatalogSearch\Model\Layer\Filter\Attribute
         }
 
         $minCount = !empty($optionsFacetedData) ? min(array_column($optionsFacetedData, 'count')) : 0;
+        $attribute = $this->getAttributeModel();
+        $forceDisplay = $attribute->getFacetDisplayMode() == FilterDisplayMode::ALWAYS_DISPLAYED;
 
-        if (!empty($this->currentFilterValue) || $minCount < $productCollection->getSize()) {
+        if (!empty($this->currentFilterValue) || $minCount < $productCollection->getSize() || $forceDisplay) {
             foreach ($optionsFacetedData as $value => $data) {
                 $items[$value] = [
                     'label' => $this->tagFilter->filter($value),

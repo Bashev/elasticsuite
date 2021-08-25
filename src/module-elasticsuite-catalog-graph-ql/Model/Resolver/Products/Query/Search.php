@@ -1,14 +1,10 @@
 <?php
-/**
- * DISCLAIMER
- * Do not edit or add to this file if you wish to upgrade Smile Elastic Suite to newer
- * versions in the future.
+/*
+ * @package      Webcode_elasticsuite
  *
- * @category  Smile
- * @package   Smile\ElasticsuiteCatalogGraphQl
- * @author    Romain Ruaud <romain.ruaud@smile.fr>
- * @copyright 2020 Smile
- * @license   Open Software License ("OSL") v. 3.0
+ * @author       Kostadin Bashev (bashev@webcode.bg)
+ * @copyright    Copyright © 2021 Webcode Ltd. (https://webcode.bg/)
+ * @license      See LICENSE.txt for license details.
  */
 
 namespace Smile\ElasticsuiteCatalogGraphQl\Model\Resolver\Products\Query;
@@ -82,7 +78,7 @@ class Search implements ProductQueryInterface
     /**
      * {@inheritDoc}
      */
-    public function getResult(array $args, ResolveInfo $info/*, ContextInterface $context*/): SearchResult
+    public function getResult(array $args, ResolveInfo $info, ContextInterface $context): SearchResult
     {
         $queryFields    = $this->fieldSelection->getProductsFieldSelection($info);
         $searchCriteria = $this->buildSearchCriteria($args, $info);
@@ -92,7 +88,7 @@ class Search implements ProductQueryInterface
         $providerSearchCriteria = clone($searchCriteria);
         $providerSearchCriteria->setFilterGroups([]);
 
-        $productsResults = $this->productProvider->getList($providerSearchCriteria, $searchResults, $queryFields);
+        $productsResults = $this->productProvider->getList($providerSearchCriteria, $searchResults, $queryFields, $context);
         $productArray    = [];
 
         /** @var \Magento\Catalog\Model\Product $product */
@@ -103,7 +99,7 @@ class Search implements ProductQueryInterface
 
         $maxPages = 0;
         if ($searchCriteria->getPageSize() && $searchCriteria->getPageSize() > 0) {
-            $maxPages = (int) ceil($productsResults->getTotalCount() / $searchCriteria->getPageSize());
+            $maxPages = (int) ceil($searchResults->getTotalCount() / $searchCriteria->getPageSize());
         }
 
         return $this->searchResultFactory->create([

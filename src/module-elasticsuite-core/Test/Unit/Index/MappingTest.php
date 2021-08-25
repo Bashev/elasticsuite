@@ -1,15 +1,10 @@
 <?php
-/**
- * DISCLAIMER
+/*
+ * @package      Webcode_elasticsuite
  *
- * Do not edit or add to this file if you wish to upgrade Smile ElasticSuite to newer
- * versions in the future.
- *
- * @category  Smile
- * @package   Smile\ElasticsuiteCore
- * @author    Aurelien FOUCRET <aurelien.foucret@smile.fr>
- * @copyright 2020 Smile
- * @license   Open Software License ("OSL") v. 3.0
+ * @author       Kostadin Bashev (bashev@webcode.bg)
+ * @copyright    Copyright © 2021 Webcode Ltd. (https://webcode.bg/)
+ * @license      See LICENSE.txt for license details.
  */
 namespace Smile\ElasticsuiteCore\Test\Unit\Index;
 
@@ -193,35 +188,36 @@ class MappingTest extends \PHPUnit\Framework\TestCase
         $fieldFilter = new SearchableFieldFilter();
 
         $properties = $mapping->getWeightedSearchProperties(null, null, 2, $fieldFilter);
+
         $this->assertCount(4, $properties);
-        $this->assertEquals(2, $properties['standardField']);
-        $this->assertEquals(4, $properties['weightedField']);
-        $this->assertEquals(2, $properties['whitespaceField']);
-        $this->assertEquals(4, $properties['whitespaceWeightedField']);
+        $this->assertEquals(2, $properties['standardField.standard']);
+        $this->assertEquals(4, $properties['weightedField.standard']);
+        $this->assertEquals(2, $properties['whitespaceField.whitespace']);
+        $this->assertEquals(4, $properties['whitespaceWeightedField.whitespace']);
 
         $properties = $mapping->getWeightedSearchProperties(Field::ANALYZER_STANDARD, null, 1, $fieldFilter);
         $this->assertCount(2, $properties);
-        $this->assertEquals(1, $properties['standardField']);
-        $this->assertEquals(2, $properties['weightedField']);
+        $this->assertEquals(1, $properties['standardField.standard']);
+        $this->assertEquals(2, $properties['weightedField.standard']);
 
         $properties = $mapping->getWeightedSearchProperties(Field::ANALYZER_WHITESPACE, null, 1, $fieldFilter);
         $this->assertCount(3, $properties);
         $this->assertEquals(2, $properties['weightedField.whitespace']);
-        $this->assertEquals(1, $properties['whitespaceField']);
-        $this->assertEquals(2, $properties['whitespaceWeightedField']);
+        $this->assertEquals(1, $properties['whitespaceField.whitespace']);
+        $this->assertEquals(2, $properties['whitespaceWeightedField.whitespace']);
 
         $properties = $mapping->getWeightedSearchProperties(null, Mapping::DEFAULT_SEARCH_FIELD, 1, $fieldFilter);
         $this->assertCount(4, $properties);
         $this->assertEquals(1, $properties['search']);
-        $this->assertEquals(2, $properties['weightedField']);
-        $this->assertEquals(1, $properties['whitespaceField']);
-        $this->assertEquals(2, $properties['whitespaceWeightedField']);
+        $this->assertEquals(2, $properties['weightedField.standard']);
+        $this->assertEquals(1, $properties['whitespaceField.whitespace']);
+        $this->assertEquals(2, $properties['whitespaceWeightedField.whitespace']);
 
         $properties = $mapping->getWeightedSearchProperties(Field::ANALYZER_WHITESPACE, Mapping::DEFAULT_SEARCH_FIELD, 1, $fieldFilter);
         $this->assertCount(3, $properties);
         $this->assertEquals(1, $properties['search.whitespace']);
         $this->assertEquals(2, $properties['weightedField.whitespace']);
-        $this->assertEquals(2, $properties['whitespaceWeightedField']);
+        $this->assertEquals(2, $properties['whitespaceWeightedField.whitespace']);
     }
 
     /**

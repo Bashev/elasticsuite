@@ -1,15 +1,10 @@
 <?php
-/**
- * DISCLAIMER
+/*
+ * @package      Webcode_elasticsuite
  *
- * Do not edit or add to this file if you wish to upgrade Smile ElasticSuite to newer
- * versions in the future.
- *
- * @category  Smile
- * @package   Smile\ElasticsuiteVirtualCategory
- * @author    Romain Ruaud <romain.ruaud@smile.fr>
- * @copyright 2020 Smile
- * @license   Open Software License ("OSL") v. 3.0
+ * @author       Kostadin Bashev (bashev@webcode.bg)
+ * @copyright    Copyright © 2021 Webcode Ltd. (https://webcode.bg/)
+ * @license      See LICENSE.txt for license details.
  */
 namespace Smile\ElasticsuiteVirtualCategory\Plugin\Catalog\Category;
 
@@ -105,9 +100,9 @@ class ChooserPlugin
             $ids = [];
         }
 
-        foreach ($ids as $key => &$id) {
-            $id = (int) $id;
-            if ($id <= 0) {
+        foreach ($ids as $key => &$categoryId) {
+            $categoryId = (int) $categoryId;
+            if ($categoryId <= 0) {
                 unset($ids[$key]);
             }
         }

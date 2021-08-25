@@ -1,15 +1,10 @@
 <?php
-/**
- * DISCLAIMER
+/*
+ * @package      Webcode_elasticsuite
  *
- * Do not edit or add to this file if you wish to upgrade Smile ElasticSuite to newer
- * versions in the future.
- *
- * @category  Smile
- * @package   Smile\ElasticsuiteCore
- * @author    Aurelien FOUCRET <aurelien.foucret@smile.fr>
- * @copyright 2020 Smile
- * @license   Open Software License ("OSL") v. 3.0
+ * @author       Kostadin Bashev (bashev@webcode.bg)
+ * @copyright    Copyright © 2021 Webcode Ltd. (https://webcode.bg/)
+ * @license      See LICENSE.txt for license details.
  */
 
 namespace Smile\ElasticsuiteCore\Api\Index\Mapping;
@@ -47,6 +42,13 @@ interface FieldInterface
     const ANALYZER_SORTABLE   = 'sortable';
     const ANALYZER_PHONETIC   = 'phonetic';
     const ANALYZER_UNTOUCHED  = 'untouched';
+    const ANALYZER_KEYWORD    = 'keyword';
+
+    /**
+     * Field filter logical operators.
+     */
+    const FILTER_LOGICAL_OPERATOR_OR   = 0;
+    const FILTER_LOGICAL_OPERATOR_AND  = 1;
 
     /**
      * Field name.
@@ -158,6 +160,13 @@ interface FieldInterface
      * @return mixed
      */
     public function getSortMissing($direction = SortOrderInterface::SORT_ASC);
+
+    /**
+     * Retrieve the logical operator to use when building a filter combining multiple values: OR (default) or AND.
+     *
+     * @return int
+     */
+    public function getFilterLogicalOperator();
 
     /**
      * @return array

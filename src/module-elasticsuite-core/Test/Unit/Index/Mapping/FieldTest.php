@@ -1,15 +1,10 @@
 <?php
-/**
- * DISCLAIMER
+/*
+ * @package      Webcode_elasticsuite
  *
- * Do not edit or add to this file if you wish to upgrade Smile ElasticSuite to newer
- * versions in the future.
- *
- * @category  Smile
- * @package   Smile\ElasticsuiteCore
- * @author    Aurelien FOUCRET <aurelien.foucret@smile.fr>
- * @copyright 2020 Smile
- * @license   Open Software License ("OSL") v. 3.0
+ * @author       Kostadin Bashev (bashev@webcode.bg)
+ * @copyright    Copyright © 2021 Webcode Ltd. (https://webcode.bg/)
+ * @license      See LICENSE.txt for license details.
  */
 namespace Smile\ElasticsuiteCore\Test\Unit\Index\Mapping;
 
@@ -129,12 +124,12 @@ class FieldTest extends \PHPUnit\Framework\TestCase
         $mappingPropertyConfig = $field->getMappingPropertyConfig();
         $this->assertEquals(FieldInterface::FIELD_TYPE_TEXT, $mappingPropertyConfig['type']);
 
-        $this->assertEquals(FieldInterface::ANALYZER_STANDARD, $mappingPropertyConfig['analyzer']);
+        $this->assertEquals(FieldInterface::ANALYZER_KEYWORD, $mappingPropertyConfig['analyzer']);
         $this->assertEquals(FieldInterface::ANALYZER_WHITESPACE, $mappingPropertyConfig['fields']['whitespace']['analyzer']);
         $this->assertEquals(FieldInterface::ANALYZER_SHINGLE, $mappingPropertyConfig['fields']['shingle']['analyzer']);
         $this->assertEquals(FieldInterface::ANALYZER_SORTABLE, $mappingPropertyConfig['fields']['sortable']['analyzer']);
 
-        $this->assertEquals('field', $field->getMappingProperty(FieldInterface::ANALYZER_STANDARD));
+        $this->assertEquals('field.standard', $field->getMappingProperty(FieldInterface::ANALYZER_STANDARD));
         $this->assertEquals('field.whitespace', $field->getMappingProperty(FieldInterface::ANALYZER_WHITESPACE));
         $this->assertEquals('field.shingle', $field->getMappingProperty(FieldInterface::ANALYZER_SHINGLE));
         $this->assertEquals('field.sortable', $field->getMappingProperty(FieldInterface::ANALYZER_SORTABLE));
@@ -156,7 +151,7 @@ class FieldTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(FieldInterface::FIELD_TYPE_TEXT, $mappingPropertyConfig['type']);
 
         $this->assertEquals(null, $field->getMappingProperty());
-        $this->assertEquals('field', $field->getMappingProperty(FieldInterface::ANALYZER_STANDARD));
+        $this->assertEquals('field.standard', $field->getMappingProperty(FieldInterface::ANALYZER_STANDARD));
     }
 
     /**

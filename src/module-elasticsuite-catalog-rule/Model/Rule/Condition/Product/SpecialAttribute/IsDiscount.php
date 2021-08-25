@@ -1,19 +1,15 @@
 <?php
-/**
- * DISCLAIMER
+/*
+ * @package      Webcode_elasticsuite
  *
- * Do not edit or add to this file if you wish to upgrade Smile ElasticSuite to newer
- * versions in the future.
- *
- * @category  Smile
- * @package   Smile\ElasticsuiteCatalogRule
- * @author    Romain Ruaud <romain.ruaud@smile.fr>
- * @copyright 2020 Smile
- * @license   Open Software License ("OSL") v. 3.0
+ * @author       Kostadin Bashev (bashev@webcode.bg)
+ * @copyright    Copyright © 2021 Webcode Ltd. (https://webcode.bg/)
+ * @license      See LICENSE.txt for license details.
  */
 namespace Smile\ElasticsuiteCatalogRule\Model\Rule\Condition\Product\SpecialAttribute;
 
 use Smile\ElasticsuiteCatalogRule\Api\Rule\Condition\Product\SpecialAttributeInterface;
+use Smile\ElasticsuiteCatalogRule\Model\Rule\Condition\Product as ProductCondition;
 
 /**
  * Special "is_discount" attribute class.
@@ -49,8 +45,9 @@ class IsDiscount implements SpecialAttributeInterface
 
     /**
      * {@inheritdoc}
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getSearchQuery()
+    public function getSearchQuery(ProductCondition $condition)
     {
         // Query can be computed directly with the attribute code and value. (price.is_discount = true).
         return null;
@@ -82,16 +79,18 @@ class IsDiscount implements SpecialAttributeInterface
 
     /**
      * {@inheritdoc}
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getValueName()
+    public function getValueName($value)
     {
         return ' ';
     }
 
     /**
      * {@inheritdoc}
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getValue()
+    public function getValue($value)
     {
         return true;
     }

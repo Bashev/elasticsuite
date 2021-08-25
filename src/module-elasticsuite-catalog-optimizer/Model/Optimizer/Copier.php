@@ -1,15 +1,10 @@
 <?php
-/**
- * DISCLAIMER
+/*
+ * @package      Webcode_elasticsuite
  *
- * Do not edit or add to this file if you wish to upgrade Smile ElasticSuite to newer
- * versions in the future.
- *
- * @category  Smile
- * @package   Smile\ElasticsuiteCatalogOptimizer
- * @author    Dmytro ANDROSHCHUK <dmand@smile.fr>
- * @copyright 2020 Smile
- * @license   Open Software License ("OSL") v. 3.0
+ * @author       Kostadin Bashev (bashev@webcode.bg)
+ * @copyright    Copyright © 2021 Webcode Ltd. (https://webcode.bg/)
+ * @license      See LICENSE.txt for license details.
  */
 namespace Smile\ElasticsuiteCatalogOptimizer\Model\Optimizer;
 
@@ -55,7 +50,9 @@ class Copier
      * Create optimizer duplicate
      *
      * @param OptimizerInterface $optimizer Optimizer model.
+     *
      * @return OptimizerInterface
+     * @SuppressWarnings(PHPMD.StaticAccess)
      */
     public function copy(OptimizerInterface $optimizer): OptimizerInterface
     {
@@ -67,8 +64,14 @@ class Copier
         /** @var Optimizer $duplicate */
         $duplicate = $this->optimizerFactory->create();
         $duplicate->setData($optimizerData);
-        $duplicate->setFromDate(\DateTime::createFromFormat('Y-m-d', $optimizerData['from_date'])->format('m/d/Y'));
-        $duplicate->setToDate(\DateTime::createFromFormat('Y-m-d', $optimizerData['to_date'])->format('m/d/Y'));
+        if ($fromDate = \DateTime::createFromFormat('Y-m-d', $optimizerData['from_date'])) {
+            // Warning: user locale dependent.
+            $duplicate->setFromDate($fromDate->format('m/d/Y'));
+        }
+        if ($toDate = \DateTime::createFromFormat('Y-m-d', $optimizerData['to_date'])) {
+            // Warning: user locale dependent.
+            $duplicate->setToDate($toDate->format('m/d/Y'));
+        }
         $duplicate->setId(null);
 
         return $duplicate;

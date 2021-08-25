@@ -1,15 +1,10 @@
 <?php
-/**
- * DISCLAIMER
+/*
+ * @package      Webcode_elasticsuite
  *
- * Do not edit or add to this file if you wish to upgrade Smile ElasticSuite to newer
- * versions in the future.
- *
- * @category  Smile
- * @package   Smile\ElasticsuiteCore
- * @author    Aurelien FOUCRET <aurelien.foucret@smile.fr>
- * @copyright 2020 Smile
- * @license   Open Software License ("OSL") v. 3.0
+ * @author       Kostadin Bashev (bashev@webcode.bg)
+ * @copyright    Copyright © 2021 Webcode Ltd. (https://webcode.bg/)
+ * @license      See LICENSE.txt for license details.
  */
 
 namespace Smile\ElasticsuiteCore\Search\Adapter\Elasticsuite\Request\Aggregation;
@@ -61,6 +56,8 @@ class Builder
     /**
      * Build ES aggregations from search request buckets.
      *
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     *
      * @param BucketInterface[] $buckets Bucket to be converted into ES aggregations
      *
      * @return array
@@ -81,6 +78,9 @@ class Builder
 
             foreach ($bucket->getMetrics() as $metric) {
                 $metricDefinition = array_merge(['field' => $metric->getField()], $metric->getConfig() ?? []);
+                if (isset($metricDefinition['script'])) {
+                    unset($metricDefinition['field']);
+                }
                 $subAggregations[$metric->getName()] = [$metric->getType() => $metricDefinition];
             }
 

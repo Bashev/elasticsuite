@@ -1,18 +1,11 @@
 <?xml version="1.0"?>
 <!--
-/**
- * DISCLAIMER
- *
- * Do not edit or add to this file if you wish to upgrade Smile ElasticSuite to newer
- * versions in the future.
- *
- * @category  Smile
- * @package   Smile\ElasticsuiteCatalogGraphQl
- * @author    Romain Ruaud <romain.ruaud@smile.fr>
- * @copyright 2020 Smile
- * @license   Open Software License ("OSL") v. 3.0
- */
- -->
+  ~ @package      Webcode_elasticsuite
+  ~
+  ~ @author       Kostadin Bashev (bashev@webcode.bg)
+  ~ @copyright    Copyright © 2021 Webcode Ltd. (https://webcode.bg/)
+  ~ @license      See LICENSE.txt for license details.
+  -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <preference for="Magento\CatalogGraphQl\DataProvider\Product\SearchCriteriaBuilder"
         type="Smile\ElasticsuiteCatalogGraphQl\DataProvider\Product\SearchCriteriaBuilder"/>
@@ -136,6 +129,36 @@
         <arguments>
             <argument name="modifiersPool" xsi:type="array">
                 <item name="coverageModifier" xsi:type="object">Smile\ElasticsuiteCatalog\Search\Request\Product\Aggregation\Provider\FilterableAttributes\Modifier\Coverage</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <virtualType name="elasticsuiteCollectionPreProcessor" type="Magento\CatalogGraphQl\Model\Resolver\Products\DataProvider\Product\CompositeCollectionProcessor">
+        <arguments>
+            <argument name="collectionProcessors" xsi:type="array">
+                <item name="search" xsi:type="object">Smile\ElasticsuiteCatalogGraphQl\Model\Resolver\Products\DataProvider\Product\CollectionProcessor\SearchCriteriaProcessor</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="elasticsuiteProductProvider" type="Magento\CatalogGraphQl\Model\Resolver\Products\DataProvider\ProductSearch">
+        <arguments>
+            <argument name="collectionPreProcessor" xsi:type="object">elasticsuiteCollectionPreProcessor</argument>
+        </arguments>
+    </virtualType>
+
+    <type name="Smile\ElasticsuiteCatalogGraphQl\Model\Resolver\Products\Query\Search">
+        <arguments>
+            <argument name="productProvider" xsi:type="object">elasticsuiteProductProvider</argument>
+        </arguments>
+    </type>
+
+    <preference for="Magento\CatalogGraphQl\Model\Resolver\Aggregations" type="Smile\ElasticsuiteCatalogGraphQl\Model\Resolver\Aggregations"/>
+
+    <type name="\Smile\ElasticsuiteCatalog\Search\Request\Product\Aggregation\Provider\FilterableAttributes">
+        <arguments>
+            <argument name="modifiersPool" xsi:type="array">
+                <item name="viewMoreFilterModifier" xsi:type="object">Smile\ElasticsuiteCatalogGraphQl\Search\Request\Product\Aggregation\Provider\FilterableAttributes\Modifier\ViewMore</item>
             </argument>
         </arguments>
     </type>

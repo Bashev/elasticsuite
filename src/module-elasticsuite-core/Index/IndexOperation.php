@@ -1,15 +1,10 @@
 <?php
-/**
- * DISCLAIMER
+/*
+ * @package      Webcode_elasticsuite
  *
- * Do not edit or add to this file if you wish to upgrade Smile ElasticSuite to newer
- * versions in the future.
- *
- * @category  Smile
- * @package   Smile\ElasticsuiteCore
- * @author    Aurelien FOUCRET <aurelien.foucret@smile.fr>
- * @copyright 2020 Smile
- * @license   Open Software License ("OSL") v. 3.0
+ * @author       Kostadin Bashev (bashev@webcode.bg)
+ * @copyright    Copyright © 2021 Webcode Ltd. (https://webcode.bg/)
+ * @license      See LICENSE.txt for license details.
  */
 
 namespace Smile\ElasticsuiteCore\Index;
@@ -141,6 +136,39 @@ class IndexOperation implements IndexOperationInterface
         $this->client->putMapping($index->getName(), $index->getMapping()->asArray());
 
         return $index;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function updateMapping($indexIdentifier, $store, $fields = [])
+    {
+        // Refresh indices configuration.
+        $this->indicesConfiguration = $this->indexSettings->getIndicesConfig();
+        try {
+            $index = $this->getIndexByName($indexIdentifier, $store);
+            // Mapping is injected in initIndex();.
+            $mapping = $index->getMapping()->asArray();
+
+            if (!empty($fields)) {
+                $properties = $mapping['properties'] ?? [];
+                if (!empty($properties) && is_array($properties)) {
+                    $properties = array_filter(
+                        $properties,
+                        function ($key) use ($fields) {
+                            return in_array($key, $fields);
+                        },
+                        ARRAY_FILTER_USE_KEY
+                    );
+
+                    $mapping['properties'] = $properties;
+                }
+            }
+
+            $this->client->putMapping($index->getName(), $mapping);
+        } catch (\LogicException $exception) {
+            ; // Do nothing, we cannot update mapping of a non existing index.
+        }
     }
 
     /**

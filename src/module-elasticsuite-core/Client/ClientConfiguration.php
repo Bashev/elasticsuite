@@ -1,15 +1,10 @@
 <?php
-/**
- * DISCLAIMER
+/*
+ * @package      Webcode_elasticsuite
  *
- * Do not edit or add to this file if you wish to upgrade Smile ElasticSuite to newer
- * versions in the future.
- *
- * @category  Smile
- * @package   Smile\ElasticsuiteCore
- * @author    Aurelien FOUCRET <aurelien.foucret@smile.fr>
- * @copyright 2020 Smile
- * @license   Open Software License ("OSL") v. 3.0
+ * @author       Kostadin Bashev (bashev@webcode.bg)
+ * @copyright    Copyright © 2021 Webcode Ltd. (https://webcode.bg/)
+ * @license      See LICENSE.txt for license details.
  */
 
 namespace Smile\ElasticsuiteCore\Client;
@@ -91,6 +86,16 @@ class ClientConfiguration implements ClientConfigurationInterface
     /**
      * {@inheritdoc}
      */
+    public function isHttpAuthEncodingEnabled()
+    {
+        $authEncodingEnabled = (bool) $this->getElasticsearchClientConfigParam('enable_http_auth_encoding');
+
+        return $authEncodingEnabled && $this->isHttpAuthEnabled() !== false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getHttpAuthUser()
     {
         return (string) $this->getElasticsearchClientConfigParam('http_auth_user');
@@ -121,6 +126,7 @@ class ClientConfiguration implements ClientConfigurationInterface
             'servers'               => $this->getServerList(),
             'scheme'                => $this->getScheme(),
             'enable_http_auth'      => $this->isHttpAuthEnabled(),
+            'http_auth_encoded'     => $this->isHttpAuthEncodingEnabled(),
             'http_auth_user'        => $this->getHttpAuthUser(),
             'http_auth_pwd'         => $this->getHttpAuthPassword(),
             'is_debug_mode_enabled' => $this->isDebugModeEnabled(),

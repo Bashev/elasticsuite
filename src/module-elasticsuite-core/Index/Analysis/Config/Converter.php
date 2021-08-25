@@ -1,15 +1,10 @@
 <?php
-/**
- * DISCLAIMER
+/*
+ * @package      Webcode_elasticsuite
  *
- * Do not edit or add to this file if you wish to upgrade Smile ElasticSuite to newer
- * versions in the future.
- *
- * @category  Smile
- * @package   Smile\ElasticsuiteCore
- * @author    Aurelien FOUCRET <aurelien.foucret@smile.fr>
- * @copyright 2020 Smile
- * @license   Open Software License ("OSL") v. 3.0
+ * @author       Kostadin Bashev (bashev@webcode.bg)
+ * @copyright    Copyright © 2021 Webcode Ltd. (https://webcode.bg/)
+ * @license      See LICENSE.txt for license details.
  */
 
 namespace Smile\ElasticsuiteCore\Index\Analysis\Config;
@@ -205,7 +200,7 @@ class Converter implements \Magento\Framework\Config\ConverterInterface
                 if ($childNode instanceof \DOMElement) {
                     try {
                         $filter[$childNode->tagName] = $this->jsonDecoder->decode($childNode->nodeValue);
-                    } catch (\Exception $e) {
+                    } catch (\Exception $exception) {
                         $filter[$childNode->tagName] = $childNode->nodeValue;
                     }
                 }

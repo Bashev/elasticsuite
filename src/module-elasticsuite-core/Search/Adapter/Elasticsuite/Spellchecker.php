@@ -1,15 +1,10 @@
 <?php
-/**
- * DISCLAIMER
+/*
+ * @package      Webcode_elasticsuite
  *
- * Do not edit or add to this file if you wish to upgrade Smile ElasticSuite to newer
- * versions in the future.
- *
- * @category  Smile
- * @package   Smile\ElasticsuiteCore
- * @author    Aurelien FOUCRET <aurelien.foucret@smile.fr>
- * @copyright 2020 Smile
- * @license   Open Software License ("OSL") v. 3.0
+ * @author       Kostadin Bashev (bashev@webcode.bg)
+ * @copyright    Copyright © 2021 Webcode Ltd. (https://webcode.bg/)
+ * @license      See LICENSE.txt for license details.
  */
 
 namespace Smile\ElasticsuiteCore\Search\Adapter\Elasticsuite;
@@ -84,6 +79,9 @@ class Spellchecker implements SpellcheckerInterface
         try {
             $cutoffFrequencyLimit = $this->getCutoffrequencyLimit($request);
             $termVectors          = $this->getTermVectors($request);
+            if (is_array($termVectors) && isset($termVectors['docs'])) {
+                $termVectors = current($termVectors['docs']);
+            }
             $queryTermStats       = $this->parseTermVectors($termVectors, $cutoffFrequencyLimit);
 
             if ($queryTermStats['total'] == $queryTermStats['stop']) {
@@ -140,19 +138,22 @@ class Spellchecker implements SpellcheckerInterface
      */
     private function getTermVectors(RequestInterface $request)
     {
-        $termVectorsQuery = [
-            'index'           => $request->getIndex(),
-            'type'            => '_doc',
-            'term_statistics' => true,
-            'fields'          => [
-                MappingInterface::DEFAULT_SPELLING_FIELD,
-                MappingInterface::DEFAULT_SPELLING_FIELD . "." . FieldInterface::ANALYZER_WHITESPACE,
+        $mtermVectorsQuery['body'] = [
+            'docs' => [
+                [
+                    '_index'          => $request->getIndex(),
+                    '_type'           => '_doc',
+                    'term_statistics' => true,
+                    'fields'          => [
+                        MappingInterface::DEFAULT_SPELLING_FIELD,
+                        MappingInterface::DEFAULT_SPELLING_FIELD . "." . FieldInterface::ANALYZER_WHITESPACE,
+                    ],
+                    'doc'             => [MappingInterface::DEFAULT_SPELLING_FIELD => $request->getQueryText()],
+                ],
             ],
         ];
 
-        $termVectorsQuery['body']['doc'] = [MappingInterface::DEFAULT_SPELLING_FIELD => $request->getQueryText()];
-
-        return $this->client->termvectors($termVectorsQuery);
+        return $this->client->mtermvectors($mtermVectorsQuery);
     }
 
     /**

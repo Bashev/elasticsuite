@@ -1,15 +1,10 @@
 <?php
-/**
- * DISCLAIMER
+/*
+ * @package      Webcode_elasticsuite
  *
- * Do not edit or add to this file if you wish to upgrade Smile ElasticSuite to newer
- * versions in the future.
- *
- * @category  Smile
- * @package   Smile\ElasticsuiteCore
- * @author    Aurelien FOUCRET <aurelien.foucret@smile.fr>
- * @copyright 2020 Smile
- * @license   Open Software License ("OSL") v. 3.0
+ * @author       Kostadin Bashev (bashev@webcode.bg)
+ * @copyright    Copyright © 2021 Webcode Ltd. (https://webcode.bg/)
+ * @license      See LICENSE.txt for license details.
  */
 
 namespace Smile\ElasticsuiteCore\Search\Request\SortOrder;
@@ -22,6 +17,8 @@ use Smile\ElasticsuiteCore\Api\Index\MappingInterface;
 
 /**
  * Allow to build a sort order from arrays.
+ *
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  *
  * @category Smile
  * @package  Smile\ElasticsuiteCore
@@ -45,19 +42,27 @@ class SortOrderBuilder
     private $queryBuilder;
 
     /**
+     * @var ScriptFactory
+     */
+    private $scriptOrderFactory;
+
+    /**
      * Constructor.
      *
      * @param StandardFactory $standardOrderFactory Standard sort order factory.
      * @param NestedFactory   $nestedOrderFactory   Nested sort order factory.
      * @param QueryBuilder    $queryBuilder         Query builder used to build queries inside nested sort order.
+     * @param ScriptFactory   $scriptOrderFactory   Script sort order factory.
      */
     public function __construct(
         StandardFactory $standardOrderFactory,
         NestedFactory $nestedOrderFactory,
-        QueryBuilder $queryBuilder
+        QueryBuilder $queryBuilder,
+        ScriptFactory $scriptOrderFactory
     ) {
         $this->standardOrderFactory = $standardOrderFactory;
         $this->nestedOrderFactory   = $nestedOrderFactory;
+        $this->scriptOrderFactory   = $scriptOrderFactory;
         $this->queryBuilder         = $queryBuilder;
     }
 
@@ -79,6 +84,13 @@ class SortOrderBuilder
         foreach ($orders as $fieldName => $sortOrderParams) {
             $factory = $this->standardOrderFactory;
 
+            if ($fieldName === Script::SCRIPT_FIELD) {
+                $factory = $this->scriptOrderFactory;
+                if ($sortOrderParams['direction'] && is_array($sortOrderParams['direction'])) {
+                    $sortOrderParams = $sortOrderParams['direction'];
+                }
+            }
+
             try {
                 $sortField       = $mapping->getField($fieldName);
                 $sortOrderParams = $this->getSortOrderParams($sortField, $sortOrderParams);
@@ -95,7 +107,7 @@ class SortOrderBuilder
                     );
                     $sortOrderParams['nestedFilter'] = $nestedFilter;
                 }
-            } catch (\LogicException $e) {
+            } catch (\LogicException $exception) {
                 $sortOrderParams['field'] = $fieldName;
             }
 

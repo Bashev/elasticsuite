@@ -1,15 +1,10 @@
 <?php
-/**
- * DISCLAIMER
+/*
+ * @package      Webcode_elasticsuite
  *
- * Do not edit or add to this file if you wish to upgrade Smile ElasticSuite to newer
- * versions in the future.
- *
- * @category  Smile
- * @package   Smile\ElasticsuiteTracker
- * @author    Romain Ruaud <romain.ruaud@smile.fr>
- * @copyright 2020 Smile
- * @license   Open Software License ("OSL") v. 3.0
+ * @author       Kostadin Bashev (bashev@webcode.bg)
+ * @copyright    Copyright © 2021 Webcode Ltd. (https://webcode.bg/)
+ * @license      See LICENSE.txt for license details.
  */
 namespace Smile\ElasticsuiteTracker\Block\Variables\Page;
 
@@ -65,7 +60,7 @@ class Order extends \Smile\ElasticsuiteTracker\Block\Variables\Page\AbstractBloc
 
         $order = $order = $this->checkoutSession->getLastRealOrder();
 
-        if ($order) {
+        if ($order && $order->getIncrementId()) {
             $variables['order.subtotal']        = $order->getBaseSubtotalInclTax();
             $variables['order.discount_total']  = $order->getDiscountAmount();
             $variables['order.shipping_total']  = $order->getShippingAmount();

@@ -1,15 +1,10 @@
 <?php
-/**
- * DISCLAIMER
+/*
+ * @package      Webcode_elasticsuite
  *
- * Do not edit or add to this file if you wish to upgrade Smile ElasticSuite to newer
- * versions in the future.
- *
- * @category  Smile
- * @package   Smile\ElasticsuiteCatalog
- * @author    Aurelien FOUCRET <aurelien.foucret@smile.fr>
- * @copyright 2020 Smile
- * @license   Open Software License ("OSL") v. 3.0
+ * @author       Kostadin Bashev (bashev@webcode.bg)
+ * @copyright    Copyright © 2021 Webcode Ltd. (https://webcode.bg/)
+ * @license      See LICENSE.txt for license details.
  */
 
 namespace Smile\ElasticsuiteCatalog\Model\Category\Indexer\Fulltext\Datasource;
@@ -39,10 +34,9 @@ class AttributeData extends AbstractAttributeData implements DatasourceInterface
             $attributesData = $this->loadAttributesRawData($storeId, $categoryIds, $backendTable, $attributeIds);
             foreach ($attributesData as $row) {
                 $productId = (int) $row['entity_id'];
-                $attribute = $this->attributesById[$row['attribute_id']];
 
                 $indexValues = $this->attributeHelper->prepareIndexValue(
-                    $attribute,
+                    $row['attribute_id'],
                     $storeId,
                     $row['value']
                 );

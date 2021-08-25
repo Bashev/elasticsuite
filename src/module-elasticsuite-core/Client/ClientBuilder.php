@@ -1,15 +1,10 @@
 <?php
-/**
- * DISCLAIMER
+/*
+ * @package      Webcode_elasticsuite
  *
- * Do not edit or add to this file if you wish to upgrade Smile ElasticSuite to newer
- * versions in the future.
- *
- * @category  Smile
- * @package   Smile\ElasticsuiteCore
- * @author    Aurelien FOUCRET <aurelien.foucret@smile.fr>
- * @copyright 2020 Smile
- * @license   Open Software License ("OSL") v. 3.0
+ * @author       Kostadin Bashev (bashev@webcode.bg)
+ * @copyright    Copyright © 2021 Webcode Ltd. (https://webcode.bg/)
+ * @license      See LICENSE.txt for license details.
  */
 
 namespace Smile\ElasticsuiteCore\Client;
@@ -43,6 +38,7 @@ class ClientBuilder
         'enable_http_auth'      => false,
         'http_auth_user'        => null,
         'http_auth_pwd'         => null,
+        'http_auth_encoded'     => false,
         'is_debug_mode_enabled' => false,
         'max_parallel_handles'  => 100, // As per default Elasticsearch Handler configuration.
     ];
@@ -99,6 +95,11 @@ class ClientBuilder
             $handlerParams = ['max_handles' => (int) $options['max_parallel_handles']];
             $handler = \Elasticsearch\ClientBuilder::defaultHandler($handlerParams);
             $clientBuilder->setHandler($handler);
+        }
+
+        if (!empty($options['http_auth_user']) && !empty($options['http_auth_pwd']) && $options['http_auth_encoded']) {
+            $authHeader = 'Basic ' . base64_encode($options['http_auth_user'] . ':' . $options['http_auth_pwd']);
+            $clientBuilder->setConnectionParams(['client' => ['headers' => ['Authorization' => [$authHeader]]]]);
         }
 
         if (null !== $this->selector) {

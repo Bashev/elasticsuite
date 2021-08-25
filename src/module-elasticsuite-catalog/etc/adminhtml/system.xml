@@ -1,19 +1,10 @@
 <!--
-/**
- * Smil_ElasticsuiteCatalog module configuration
- *
- * DISCLAIMER
- *
- * Do not edit or add to this file if you wish to upgrade Smile ElasticSuite to newer
- * versions in the future.
- *
- * @category  Smile
- * @package   Smile\ElasticsuiteCatalog
- * @author    Romain RUAUD <romain.ruaud@smile.fr>
- * @copyright 2020 Smile
- * @license   Open Software License ("OSL") v. 3.0
- */
--->
+  ~ @package      Webcode_elasticsuite
+  ~
+  ~ @author       Kostadin Bashev (bashev@webcode.bg)
+  ~ @copyright    Copyright © 2021 Webcode Ltd. (https://webcode.bg/)
+  ~ @license      See LICENSE.txt for license details.
+  -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
         <section id="smile_elasticsuite_autocomplete_settings">
@@ -50,6 +41,11 @@
 
             <group id="catalogsearch" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Catalog Search Configuration</label>
+                <field id="category_name_weight" translate="label comment" type="select" sortOrder="5" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Category Name Weight</label>
+                    <source_model>Magento\CatalogSearch\Model\Source\Weight</source_model>
+                    <comment><![CDATA[The search weight of category names when used in fulltext search.]]></comment>
+                </field>
                 <field id="redirect_if_one_result" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Redirect to product page if only one result</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>

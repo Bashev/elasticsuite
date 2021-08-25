@@ -1,15 +1,10 @@
 <?php
-/**
- * DISCLAIMER
+/*
+ * @package      Webcode_elasticsuite
  *
- * Do not edit or add to this file if you wish to upgrade Smile ElasticSuite to newer
- * versions in the future.
- *
- * @category  Smile
- * @package   Smile\ElasticsuiteCore
- * @author    Aurelien FOUCRET <aurelien.foucret@smile.fr>
- * @copyright 2020 Smile
- * @license   Open Software License ("OSL") v. 3.0
+ * @author       Kostadin Bashev (bashev@webcode.bg)
+ * @copyright    Copyright © 2021 Webcode Ltd. (https://webcode.bg/)
+ * @license      See LICENSE.txt for license details.
  */
 
 namespace Smile\ElasticsuiteCore\Search\Adapter\Elasticsuite\Request\SortOrder;
@@ -69,7 +64,12 @@ class Builder
 
         $sortOrderConfig = ['order' => $sortOrder->getDirection()];
 
-        if ($sortField !== SortOrderInterface::DEFAULT_SORT_FIELD) {
+        if ($sortOrder->getType() === SortOrderInterface::TYPE_SCRIPT) {
+            $sortOrderConfig = [
+                'type'   => $sortOrder->getScriptType(),
+                'script' => $sortOrder->getScript(),
+            ];
+        } elseif ($sortField !== SortOrderInterface::DEFAULT_SORT_FIELD) {
             $sortOrderConfig['missing']       = $sortOrder->getMissing();
             $sortOrderConfig['unmapped_type'] = FieldInterface::FIELD_TYPE_KEYWORD;
         }

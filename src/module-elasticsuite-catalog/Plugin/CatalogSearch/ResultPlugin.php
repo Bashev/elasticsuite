@@ -1,15 +1,10 @@
 <?php
-/**
- * DISCLAIMER
+/*
+ * @package      Webcode_elasticsuite
  *
- * Do not edit or add to this file if you wish to upgrade Smile ElasticSuite to newer
- * versions in the future.
- *
- * @category  Smile
- * @package   Smile\ElasticsuiteCatalog
- * @author    Romain Ruaud <romain.ruaud@smile.fr>
- * @copyright 2020 Smile
- * @license   Open Software License ("OSL") v. 3.0
+ * @author       Kostadin Bashev (bashev@webcode.bg)
+ * @copyright    Copyright © 2021 Webcode Ltd. (https://webcode.bg/)
+ * @license      See LICENSE.txt for license details.
  */
 namespace Smile\ElasticsuiteCatalog\Plugin\CatalogSearch;
 
@@ -20,6 +15,7 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\Message\ManagerInterface;
 use Magento\Framework\Event\ManagerInterface as EventManagerInterface;
+use Magento\Store\Model\ScopeInterface;
 
 /**
  * Plugin which is responsible to redirect to a product page when only one result is found.
@@ -107,7 +103,9 @@ class ResultPlugin
     ) {
         $result = $proceed();
 
-        if (!$subject->getResponse()->isRedirect() && $this->scopeConfig->isSetFlag(self::REDIRECT_SETTINGS_CONFIG_XML_FLAG)) {
+        if (!$subject->getResponse()->isRedirect() &&
+            $this->scopeConfig->isSetFlag(self::REDIRECT_SETTINGS_CONFIG_XML_FLAG, ScopeInterface::SCOPE_STORES)
+        ) {
             $layer      = $this->layerResolver->get();
             $layerState = $layer->getState();
 

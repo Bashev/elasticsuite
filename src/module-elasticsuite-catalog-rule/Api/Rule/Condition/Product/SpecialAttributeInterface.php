@@ -1,19 +1,15 @@
 <?php
-/**
- * DISCLAIMER
+/*
+ * @package      Webcode_elasticsuite
  *
- * Do not edit or add to this file if you wish to upgrade Smile ElasticSuite to newer
- * versions in the future.
- *
- * @category  Smile
- * @package   Smile\ElasticsuiteCatalogRule
- * @author    Aurelien FOUCRET <romain.ruaud@smile.fr>
- * @copyright 2020 Smile
- * @license   Open Software License ("OSL") v. 3.0
+ * @author       Kostadin Bashev (bashev@webcode.bg)
+ * @copyright    Copyright © 2021 Webcode Ltd. (https://webcode.bg/)
+ * @license      See LICENSE.txt for license details.
  */
 
 namespace Smile\ElasticsuiteCatalogRule\Api\Rule\Condition\Product;
 
+use Smile\ElasticsuiteCatalogRule\Model\Rule\Condition\Product as ProductCondition;
 use Smile\ElasticsuiteCore\Search\Request\QueryInterface;
 
 /**
@@ -26,46 +22,73 @@ use Smile\ElasticsuiteCore\Search\Request\QueryInterface;
 interface SpecialAttributeInterface
 {
     /**
+     * Return attribute code/field name.
+     *
      * @return string
      */
     public function getAttributeCode();
 
     /**
-     * @return QueryInterface
+     * Return complex search query if applicable.
+     *
+     * @param ProductCondition $condition Product condition.
+     *
+     * @return QueryInterface|null
      */
-    public function getSearchQuery();
+    public function getSearchQuery(ProductCondition $condition);
 
     /**
-     * @return string
+     * Get operator name.
+     * Return null to let the native code determine the operator name according to the operator.
+     *
+     * @return string|null
      */
     public function getOperatorName();
 
     /**
+     * This value will define which operators will be available for this condition.
+     * Possible values are: string, numeric, date, select, multiselect, grid, boolean.
+     *
      * @return string
      */
     public function getInputType();
 
     /**
+     * Value element type will define renderer for condition value element.
+     *
      * @return string
      */
     public function getValueElementType();
 
     /**
-     * @return string
+     * Get value name.
+     *
+     * @param mixed $value Raw condition value.
+     *
+     * @return array|string
      */
-    public function getValueName();
+    public function getValueName($value);
 
     /**
+     * Get value.
+     * Allows to hardcode a value for boolean special attributes.
+     *
+     * @param mixed $value Raw condition value.
+     *
      * @return mixed
      */
-    public function getValue();
+    public function getValue($value);
 
     /**
+     * Get value options.
+     *
      * @return array
      */
     public function getValueOptions();
 
     /**
+     * Get label.
+     *
      * @return string
      */
     public function getLabel();

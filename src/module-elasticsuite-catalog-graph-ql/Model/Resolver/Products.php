@@ -1,14 +1,10 @@
 <?php
-/**
- * DISCLAIMER
- * Do not edit or add to this file if you wish to upgrade Smile Elastic Suite to newer
- * versions in the future.
+/*
+ * @package      Webcode_elasticsuite
  *
- * @category  Smile
- * @package   Smile\ElasticsuiteCatalogGraphQl
- * @author    Romain Ruaud <romain.ruaud@smile.fr>
- * @copyright 2020 Smile
- * @license   Open Software License ("OSL") v. 3.0
+ * @author       Kostadin Bashev (bashev@webcode.bg)
+ * @copyright    Copyright © 2021 Webcode Ltd. (https://webcode.bg/)
+ * @license      See LICENSE.txt for license details.
  */
 
 namespace Smile\ElasticsuiteCatalogGraphQl\Model\Resolver;
@@ -63,6 +59,11 @@ class Products implements ResolverInterface
         $this->contextUpdater->updateSearchContext($args);
 
         $searchResult = $this->searchQuery->getResult($args, $info, $context);
+        $layerType    = Resolver::CATALOG_LAYER_CATEGORY;
+
+        if (isset($args['search']) && (!empty($args['search']))) {
+            $layerType = Resolver::CATALOG_LAYER_SEARCH;
+        }
 
         return [
             'total_count'   => $searchResult->getTotalCount(),
@@ -73,7 +74,7 @@ class Products implements ResolverInterface
                 'total_pages'  => $searchResult->getTotalPages(),
             ],
             'search_result' => $searchResult,
-            'layer_type'    => isset($args['search']) ? Resolver::CATALOG_LAYER_SEARCH : Resolver::CATALOG_LAYER_CATEGORY,
+            'layer_type'    => $layerType,
         ];
     }
 

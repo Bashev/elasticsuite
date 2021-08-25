@@ -1,20 +1,11 @@
 <?xml version="1.0"?>
 <!--
-/**
- * Smile_ElasticsuiteCore dependency injection configuration.
- *
- * DISCLAIMER
- *
- * Do not edit or add to this file if you wish to upgrade Smile ElasticSuite to newer
- * versions in the future.
- *
- * @category  Smile
- * @package   Smile\ElasticsuiteCore
- * @author    Aurelien FOUCRET <aurelien.foucret@smile.fr>
- * @copyright 2020 Smile
- * @license   Open Software License ("OSL") v. 3.0
- */
- -->
+  ~ @package      Webcode_elasticsuite
+  ~
+  ~ @author       Kostadin Bashev (bashev@webcode.bg)
+  ~ @copyright    Copyright © 2021 Webcode Ltd. (https://webcode.bg/)
+  ~ @license      See LICENSE.txt for license details.
+  -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
 
     <preference for="Smile\ElasticsuiteCore\Api\Client\ClientInterface"
@@ -151,6 +142,7 @@
                 <item name="queryGroupBucket" xsi:type="object">queryGroupBucketFactory</item>
                 <item name="significantTermBucket" xsi:type="object">significantTermBucketFactory</item>
                 <item name="reverseNestedBucket" xsi:type="object">reverseNestedBucketFactory</item>
+                <item name="topHitsBucket" xsi:type="object">topHitsBucketFactory</item>
             </argument>
         </arguments>
     </type>
@@ -161,6 +153,7 @@
     <virtualType name="queryGroupBucketFactory" type="Smile\ElasticsuiteCore\Search\Request\Aggregation\Bucket\QueryGroupFactory" />
     <virtualType name="significantTermBucketFactory" type="Smile\ElasticsuiteCore\Search\Request\Aggregation\Bucket\SignificantTermFactory" />
     <virtualType name="reverseNestedBucketFactory" type="Smile\ElasticsuiteCore\Search\Request\Aggregation\Bucket\ReverseNestedFactory" />
+    <virtualType name="topHitsBucketFactory" type="Smile\ElasticsuiteCore\Search\Request\Aggregation\Bucket\TopHitsFactory" />
 
     <type name="Smile\ElasticsuiteCore\Search\Request\Aggregation\PipelineFactory">
         <arguments>
@@ -183,6 +176,7 @@
                 <item name="queryGroupBucket" xsi:type="object">Smile\ElasticsuiteCore\Search\Adapter\Elasticsuite\Request\Aggregation\Builder\QueryGroup\Proxy</item>
                 <item name="significantTermBucket" xsi:type="object">Smile\ElasticsuiteCore\Search\Adapter\Elasticsuite\Request\Aggregation\Builder\SignificantTerm\Proxy</item>
                 <item name="reverseNestedBucket" xsi:type="object">Smile\ElasticsuiteCore\Search\Adapter\Elasticsuite\Request\Aggregation\Builder\ReverseNested\Proxy</item>
+                <item name="topHitsBucket" xsi:type="object">Smile\ElasticsuiteCore\Search\Adapter\Elasticsuite\Request\Aggregation\Builder\TopHits\Proxy</item>
             </argument>
             <argument name="pipelineBuilders" xsi:type="array">
                 <item name="bucketSelectorPipeline" xsi:type="object">Smile\ElasticsuiteCore\Search\Adapter\Elasticsuite\Request\Aggregation\PipelineBuilder\BucketSelector\Proxy</item>
@@ -527,4 +521,47 @@
             <argument name="indexOperation" xsi:type="object">Smile\ElasticsuiteCore\Api\Index\AsyncIndexOperationInterface</argument>
         </arguments>
     </type>
+
+    <!-- Manage installing with new InstallConfigObject -->
+    <type name="Magento\Search\Setup\CompositeInstallConfig">
+        <arguments>
+            <argument name="installConfigList" xsi:type="array">
+                <item name="elasticsuite" xsi:type="object">Smile\ElasticsuiteCore\Setup\InstallConfig</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Smile\ElasticsuiteCore\Setup\InstallConfig">
+        <arguments>
+            <argument name="legacyClientMapping" xsi:type="array">
+                <item name="elasticsearch-timeout" xsi:type="string">timeout</item>
+                <item name="elasticsearch-enable-auth" xsi:type="string">enable_http_auth</item>
+                <item name="elasticsearch-username" xsi:type="string">http_auth_user</item>
+                <item name="elasticsearch-password" xsi:type="string">http_auth_pwd</item>
+            </argument>
+            <argument name="legacyIndicesMapping" xsi:type="array">
+                <item name="elasticsearch-index-prefix" xsi:type="string">alias</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Smile\ElasticsuiteCore\Setup\Validator">
+        <arguments>
+            <!-- Client need to be injected as a proxy here, because it should be instantiated just-in-time before pinging, to ensure configuration is set -->
+            <argument name="client" xsi:type="object">\Smile\ElasticsuiteCore\Api\Client\ClientInterface\Proxy</argument>
+        </arguments>
+    </type>
+
+    <type name="Magento\Search\Model\SearchEngine\Validator">
+        <arguments>
+            <argument name="engineValidators" xsi:type="array">
+                <item name="elasticsuite" xsi:type="object">Smile\ElasticsuiteCore\Setup\Validator</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Magento\Setup\Model\SearchConfigOptionsList">
+        <plugin name="addElasticsuiteToAuthorizedSearchEngines" type="Smile\ElasticsuiteCore\Plugin\Setup\SearchConfigOptionsListPlugin"/>
+    </type>
+
 </config>

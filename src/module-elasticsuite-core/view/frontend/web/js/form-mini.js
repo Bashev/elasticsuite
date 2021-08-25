@@ -1,14 +1,9 @@
-/**
- * DISCLAIMER
+/*
+ * @package      Webcode_elasticsuite
  *
- * Do not edit or add to this file if you wish to upgrade Smile ElasticSuite to newer
- * versions in the future.
- *
- * @category  Smile
- * @package   Smile\ElasticsuiteCore
- * @author    Romain Ruaud <romain.ruaud@smile.fr>
- * @copyright 2020 Smile
- * @license   Open Software License ("OSL") v. 3.0
+ * @author       Kostadin Bashev (bashev@webcode.bg)
+ * @copyright    Copyright © 2021 Webcode Ltd. (https://webcode.bg/)
+ * @license      See LICENSE.txt for license details.
  */
 
 /*jshint browser:true jquery:true*/
@@ -278,7 +273,7 @@ define([
                         }
 
                         this.responseList.indexList
-                            .on('click', function (e) {
+                            .on('click vclick', function (e) {
                                 self.responseList.selected = $(this);
                                 if (self.responseList.selected.attr("href")) {
                                     window.location.href = self.responseList.selected.attr("href");
@@ -287,11 +282,15 @@ define([
                                 }
                                 self.searchForm.trigger('submit');
                             })
-                            .on('mouseenter mouseleave', function (e) {
+                            .on('mouseenter', function (e) {
                                 self.responseList.indexList.removeClass(self.options.selectClass);
                                 $(this).addClass(self.options.selectClass);
                                 self.responseList.selected = $(e.target);
                                 self.element.attr('aria-activedescendant', $(e.target).attr('id'));
+                            })
+                            .on('mouseleave', function (e) {
+                                $(this).removeClass(self.options.selectClass);
+                                self._resetResponseList(false);
                             })
                             .on('mouseout', function () {
                                 if (!self._getLastElement() && self._getLastElement().hasClass(self.options.selectClass)) {
