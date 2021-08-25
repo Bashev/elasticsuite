@@ -1,15 +1,10 @@
 <?php
-/**
- * DISCLAIMER
+/*
+ * @package      Webcode_elasticsuite
  *
- * Do not edit or add to this file if you wish to upgrade Smile ElasticSuite to newer
- * versions in the future.
- *
- * @category  Smile
- * @package   Smile\ElasticsuiteCatalog
- * @author    Aurelien FOUCRET <aurelien.foucret@smile.fr>
- * @copyright 2020 Smile
- * @license   Open Software License ("OSL") v. 3.0
+ * @author       Kostadin Bashev (bashev@webcode.bg)
+ * @copyright    Copyright © 2021 Webcode Ltd. (https://webcode.bg/)
+ * @license      See LICENSE.txt for license details.
  */
 namespace Smile\ElasticsuiteCatalog\Model\ResourceModel\Product\Fulltext;
 
@@ -426,26 +421,6 @@ class Collection extends \Magento\Catalog\Model\ResourceModel\Product\Collection
     }
 
     /**
-     * Retrieve collection last page number.
-     *
-     * @return int
-     * @SuppressWarnings(PHPMD.ElseExpression)
-     */
-    public function getLastPageNumber()
-    {
-        $collectionSize = (int) $this->getSize();
-        if (0 === $collectionSize) {
-            return 1;
-        } elseif ($this->_pageSize) {
-            return (int) ceil($collectionSize / $this->_pageSize);
-        } elseif ($this->originalPageSize) {
-            return (int) ceil($collectionSize / $this->originalPageSize);
-        } else {
-            return 1;
-        }
-    }
-
-    /**
      * @SuppressWarnings(PHPMD.CamelCaseMethodName)
      *
      * {@inheritdoc}
@@ -476,7 +451,7 @@ class Collection extends \Magento\Catalog\Model\ResourceModel\Product\Collection
         $this->getSelect()->reset(\Magento\Framework\DB\Select::ORDER);
         $this->getSelect()->order(new \Zend_Db_Expr("FIELD(e.entity_id,$orderList)"));
 
-        $this->originalPageSize = $this->getPageSize();
+        $this->originalPageSize = $this->_pageSize;
 
         $this->isSpellchecked = $searchRequest->isSpellchecked();
 
@@ -611,7 +586,7 @@ class Collection extends \Magento\Catalog\Model\ResourceModel\Product\Collection
 
         // Pagination params.
         $size = $this->getPageSize();
-        $from = $size * (max(1, $this->getCurPage()) - 1);
+        $from = $size * (max(1, $this->_curPage) - 1);
 
         // Setup sort orders.
         $sortOrders = $this->prepareSortOrders();
